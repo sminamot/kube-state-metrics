@@ -1,6 +1,6 @@
 FLAGS =
 TESTENVVAR =
-REGISTRY = quay.io/coreos
+REGISTRY = sminamot
 TAG_PREFIX = v
 VERSION = $(shell cat VERSION)
 TAG = $(TAG_PREFIX)$(VERSION)
@@ -106,14 +106,10 @@ ifeq ($(ARCH), amd64)
 	${DOCKER_CLI} tag $(MULTI_ARCH_IMG):$(TAG) $(IMAGE):latest
 endif
 
-quay-push: .quay-push-$(ARCH)
-.quay-push-$(ARCH): .container-$(ARCH)
-	${DOCKER_CLI} push $(MULTI_ARCH_IMG):$(TAG)
-	${DOCKER_CLI} push $(MULTI_ARCH_IMG):latest
-ifeq ($(ARCH), amd64)
-	${DOCKER_CLI} push $(IMAGE):$(TAG)
-	${DOCKER_CLI} push $(IMAGE):latest
-endif
+quay-push: kube-state-metrics
+	cp -r * "${TEMP_DIR}"
+	${DOCKER_CLI} buildx build --push --platform linux/arm/v7,linux/amd64 -t $(IMAGE):latest -t $(IMAGE):$(TAG) "${TEMP_DIR}"
+	rm -rf "${TEMP_DIR}"
 
 push: .push-$(ARCH)
 .push-$(ARCH): .container-$(ARCH)
