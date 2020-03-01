@@ -113,11 +113,11 @@ quay-push:
 		linux/arm/v7,linux/amd64 \
 		-t $(IMAGE):latest \
 		-t $(IMAGE):$(TAG) \
-		--build-arg GO_VERSION=$(GO_VERSION)
-		--build-arg PKG=$(PKG)
-		--build-arg TAG=$(TAG)
-		--build-arg Commit=$(Commit)
-		--build-arg BuildDate=$(BuildDate)
+		--build-arg GO_VERSION=$(GO_VERSION) \
+		--build-arg PKG=$(PKG) \
+		--build-arg TAG=$(TAG) \
+		--build-arg Commit=$(Commit) \
+		--build-arg BuildDate=$(BuildDate) \
 		.
 
 push: .push-$(ARCH)
