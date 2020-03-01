@@ -106,10 +106,19 @@ ifeq ($(ARCH), amd64)
 	${DOCKER_CLI} tag $(MULTI_ARCH_IMG):$(TAG) $(IMAGE):latest
 endif
 
-quay-push: kube-state-metrics
-	cp -r * "${TEMP_DIR}"
-	${DOCKER_CLI} buildx build --push --platform linux/arm/v7,linux/amd64 -t $(IMAGE):latest -t $(IMAGE):$(TAG) "${TEMP_DIR}"
-	rm -rf "${TEMP_DIR}"
+quay-push:
+	${DOCKER_CLI} buildx build \
+		--push \
+		--platform \
+		linux/arm/v7,linux/amd64 \
+		-t $(IMAGE):latest \
+		-t $(IMAGE):$(TAG) \
+		--build-arg GO_VERSION=$(GO_VERSION)
+		--build-arg PKG=$(PKG)
+		--build-arg TAG=$(TAG)
+		--build-arg Commit=$(Commit)
+		--build-arg BuildDate=$(BuildDate)
+		.
 
 push: .push-$(ARCH)
 .push-$(ARCH): .container-$(ARCH)
